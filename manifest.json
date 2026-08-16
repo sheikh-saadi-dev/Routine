@@ -1,0 +1,18 @@
+{
+  "name": "রুটিন — দৈনিক পরিকল্পনা",
+  "short_name": "রুটিন",
+  "description": "নামাজ-কেন্দ্রিক দৈনিক রুটিন, বিসিএস প্রস্তুতি, অ্যালার্ম ও অভ্যাস ট্র্যাকার",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F1EA",
+  "theme_color": "#153A2C",
+  "lang": "bn",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
