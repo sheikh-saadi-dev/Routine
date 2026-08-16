@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1F4D3D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>রুটিন — আপনার দিনের সঙ্গী</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F1EA;
+    --surface:#FFFFFF;
+    --surface-2:#ECE9DE;
+    --ink:#1E231F;
+    --ink-soft:#5D6459;
+    --ink-faint:#9A9F8F;
+    --border:#E4E0D2;
+
+    --green:#26604A;
+    --green-deep:#153A2C;
+    --green-tint:#E2EFE7;
+
+    --gold:#B07E2E;
+    --gold-tint:#F6ECD8;
+
+    --blue:#33608C;
+    --blue-tint:#E4EBF3;
+
+    --rose:#A15D6C;
+    --rose-tint:#F3E4E8;
+
+    --indigo:#4C5580;
+    --indigo-tint:#E7E8F1;
+
+    --gray:#5C6169;
+    --gray-tint:#EBEAE4;
+
+    --radius-lg:22px;
+    --radius-md:16px;
+    --radius-sm:10px;
+    --shadow:0 3px 14px rgba(21,58,44,.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Hind Siliguri', sans-serif;
+    line-height:1.6;
+    font-size:15.5px;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{ font-family:'Baloo Da 2', 'Hind Siliguri', sans-serif; }
+
+  /* ---------- App shell ---------- */
+  .phone{
+    width:100%;
+    max-width:560px;
+    margin:0 auto;
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    position:relative;
+  }
+
+  /* ---------- App bar ---------- */
+  .appbar{
+    background:linear-gradient(160deg, var(--green-deep), var(--green) 85%);
+    color:#F4F2E6;
+    padding:6px 22px 20px;
+    flex-shrink:0;
+  }
+  .appbar-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12.5px;
+    color:#CFE1D6;
+    margin-bottom:6px;
+  }
+  .appbar h1{
+    margin:0 0 3px;
+    font-size:1.5rem;
+    font-weight:700;
+    letter-spacing:.01em;
+  }
+  .appbar .appbar-sub{
+    margin:0;
+    font-size:.85rem;
+    color:#CBDED3;
+  }
+  .streak-pill{
+    background:rgba(255,255,255,.14);
+    border-radius:100px;
+    padding:4px 10px;
+    font-size:11.5px;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+
+  /* ---------- Scrollable screen ---------- */
+  .screen{
+    flex:1;
+    padding:16px 16px 90px;
+  }
+
+  .panel{ display:none; animation:fadeIn .25s ease; }
+  .panel.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- Generic pieces ---------- */
+  .section-label{
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin:22px 2px 10px;
+  }
+  .section-label:first-child{ margin-top:2px; }
+
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin-bottom:4px;
+  }
+  .stat-card{
+    background:var(--surface);
+    border-radius:var(--radius-md);
+    padding:10px 6px;
+    text-align:center;
+    box-shadow:var(--shadow);
+  }
+  .stat-card .num{ font-family:'Baloo Da 2'; font-weight:700; font-size:1.05rem; color:var(--green-deep); display:block; }
+  .stat-card .lbl{ font-size:10.5px; color:var(--ink-soft); }
+
+  .progress-wrap{
+    background:var(--surface);
+    border-radius:var(--radius-md);
+    padding:12px 14px;
+    box-shadow:var(--shadow);
+    margin-top:10px;
+  }
+  .progress-wrap .p-top{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:.78rem; color:var(--ink-soft); margin-bottom:7px;
+  }
+  .progress-wrap .p-top b{ color:var(--green-deep); font-family:'Baloo Da 2'; font-size:.95rem; }
+  .progress-track{
+    height:9px; border-radius:100px; background:var(--surface-2); overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; border-radius:100px;
+    background:linear-gradient(90deg, var(--gold), var(--green));
+    width:0%; transition:width .35s ease;
+  }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin:14px 0 4px;
+  }
+  .legend button{
+    font-family:inherit;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink-soft);
+    font-size:11.5px;
+    font-weight:600;
+    padding:6px 11px;
+    border-radius:100px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+  }
+  .legend button .dot{ width:7px; height:7px; border-radius:50%; }
+  .legend button.on{ background:var(--green-deep); color:#fff; border-color:var(--green-deep); }
+  .legend button.on .dot{ background:#fff !important; }
+
+  /* ---------- Timeline (signature element) ---------- */
+  .timeline{ position:relative; margin-top:14px; padding-right:2px; }
+  .t-item{
+    position:relative;
+    display:grid;
+    grid-template-columns:20px 1fr;
+    gap:10px;
+    padding-bottom:16px;
+  }
+  .t-item .rail{
+    position:relative;
+    display:flex;
+    justify-content:center;
+  }
+  .t-item .rail::before{
+    content:"";
+    position:absolute;
+    top:18px; bottom:-16px;
+    width:2.5px;
+    background:var(--border);
+    border-radius:2px;
+  }
+  .t-item:last-child .rail::before{ display:none; }
+  .t-item .node{
+    width:13px; height:13px;
+    border-radius:50%;
+    background:var(--cat-color, var(--gray));
+    border:3px solid var(--bg);
+    box-shadow:0 0 0 1.5px var(--cat-color, var(--gray));
+    margin-top:4px;
+    z-index:1;
+  }
+  .t-item.prayer .node{ border-radius:3px; transform:rotate(45deg); width:11px; height:11px; }
+
+  .t-card{
+    background:var(--surface);
+    border-radius:var(--radius-md);
+    box-shadow:var(--shadow);
+    padding:12px 14px;
+    border-right:3px solid var(--cat-color, var(--gray));
+  }
+  .t-card.done{ opacity:.55; }
+  .t-card.done .t-title{ text-decoration:line-through; }
+  .t-card .t-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:8px;
+  }
+  .t-check{
+    display:flex; align-items:center; gap:7px;
+    flex-shrink:0;
+  }
+  .t-check input[type=checkbox]{
+    width:19px; height:19px; accent-color:var(--cat-color, var(--green)); cursor:pointer;
+  }
+  .t-alarm-row{
+    display:flex; align-items:center; gap:8px; margin-top:9px;
+  }
+  .t-alarm-row button{
+    font-family:inherit; font-size:.76rem; font-weight:600;
+    border:1px solid var(--border); background:var(--surface-2); color:var(--ink-soft);
+    border-radius:100px; padding:5px 10px; display:flex; align-items:center; gap:4px; cursor:pointer;
+  }
+  .t-alarm-row button.set{ background:var(--cat-tint, var(--gray-tint)); color:var(--cat-color, var(--ink)); border-color:transparent; }
+  .t-alarm-row input[type=time]{
+    font-family:inherit; font-size:.78rem; border:1px solid var(--border); border-radius:8px;
+    padding:4px 6px; background:var(--surface); color:var(--ink); width:90px;
+  }
+  .t-alarm-row svg{ width:13px; height:13px; }
+  .t-time{
+    font-size:11px;
+    font-weight:700;
+    color:var(--cat-color, var(--ink-soft));
+    background:var(--cat-tint, var(--gray-tint));
+    padding:3px 8px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  .t-dur{
+    font-size:10.5px;
+    color:var(--ink-faint);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .t-title{
+    font-weight:700;
+    font-size:.98rem;
+    margin:7px 0 2px;
+    color:var(--ink);
+  }
+  .t-purpose{
+    font-size:.83rem;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .t-card details{ margin-top:8px; }
+  .t-card summary{
+    font-size:.78rem;
+    font-weight:600;
+    color:var(--cat-color, var(--green));
+    cursor:pointer;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .t-card summary::-webkit-details-marker{ display:none; }
+  .t-card summary::after{ content:"▾"; font-size:9px; transition:transform .2s; }
+  .t-card details[open] summary::after{ transform:rotate(180deg); }
+  .t-avoid{
+    margin:8px 0 0;
+    font-size:.8rem;
+    color:#9A4A47;
+    background:#FBEEEC;
+    padding:7px 10px;
+    border-radius:var(--radius-sm);
+  }
+  .t-avoid b{ font-weight:700; }
+  .t-item[data-hide="1"]{ display:none; }
+
+  /* ---------- Weekly tab ---------- */
+  .day-picker{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    margin-top:10px;
+  }
+  .day-picker button{
+    font-family:'Baloo Da 2';
+    flex:0 0 auto;
+    width:52px; height:58px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink-soft);
+    font-weight:700;
+    font-size:.85rem;
+    cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  }
+  .day-picker button span{ font-size:9px; font-weight:600; font-family:'Hind Siliguri'; color:var(--ink-faint); }
+  .day-picker button.on{ background:var(--green-deep); border-color:var(--green-deep); color:#fff; }
+  .day-picker button.on span{ color:#CFE1D6; }
+  .day-picker button.off-day{ box-shadow:inset 0 0 0 1.5px var(--gold); }
+
+  .day-detail{
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    padding:16px;
+    margin-top:14px;
+    box-shadow:var(--shadow);
+  }
+  .day-detail h3{ margin:0 0 10px; font-size:1.05rem; color:var(--green-deep); }
+  .day-row{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:8px 0;
+    border-top:1px solid var(--border);
+  }
+  .day-row:first-of-type{ border-top:none; padding-top:0; }
+  .day-row .ico{
+    width:30px; height:30px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    background:var(--blue-tint); color:var(--blue);
+  }
+  .day-row.online .ico{ background:var(--gray-tint); color:var(--gray); }
+  .day-row .txt b{ display:block; font-size:.75rem; color:var(--ink-faint); font-weight:600; }
+  .day-row .txt span{ font-size:.9rem; font-weight:600; }
+  /* ---------- Cards / accordion ---------- */
+  .card{
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    padding:16px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+  }
+  .card h3{ margin:0 0 10px; font-size:1rem; color:var(--green-deep); }
+  .card p{ margin:0 0 8px; font-size:.9rem; color:var(--ink-soft); }
+  .card ul, .card ol{ margin:0; padding-right:18px; font-size:.88rem; color:var(--ink-soft); }
+  .card li{ margin-bottom:5px; }
+
+  .mini-table{ width:100%; border-collapse:collapse; font-size:.83rem; margin-top:6px; }
+  .mini-table th, .mini-table td{ text-align:right; padding:7px 6px; border-bottom:1px solid var(--border); }
+  .mini-table th{ color:var(--ink-faint); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+  .mini-table tr:last-child td{ border-bottom:none; }
+
+  .accordion{
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    margin-bottom:10px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .accordion summary{
+    list-style:none;
+    cursor:pointer;
+    padding:15px 16px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    font-weight:700;
+    font-size:.94rem;
+    color:var(--ink);
+  }
+  .accordion summary::-webkit-details-marker{ display:none; }
+  .accordion .ico{
+    width:34px; height:34px; border-radius:10px;
+    background:var(--green-tint); color:var(--green-deep);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .accordion summary .chev{ margin-right:auto; font-size:11px; color:var(--ink-faint); transition:transform .2s; }
+  .accordion[open] summary .chev{ transform:rotate(180deg); }
+  .accordion .acc-body{ padding:0 16px 16px; font-size:.87rem; color:var(--ink-soft); }
+  .accordion .acc-body p{ margin:0 0 8px; }
+  .accordion .acc-body ul, .accordion .acc-body ol{ margin:0 0 8px; padding-right:18px; }
+  .accordion .acc-body li{ margin-bottom:5px; }
+
+  .callout{
+    background:var(--green-tint);
+    border-radius:var(--radius-sm);
+    padding:11px 13px;
+    font-size:.84rem;
+    color:var(--green-deep);
+    margin:10px 0 0;
+  }
+  .callout.warn{ background:#FBEEEC; color:#8C4440; }
+  .rule-chip{
+    background:var(--green-deep);
+    color:#EFEBDD;
+    border-radius:var(--radius-sm);
+    padding:10px 13px;
+    font-size:.85rem;
+    margin-bottom:8px;
+  }
+  .rule-chip b{ color:#E7C787; }
+
+  .closing-card{
+    background:var(--green-deep);
+    color:#E9E6D8;
+    border-radius:var(--radius-lg);
+    padding:18px;
+    font-size:.88rem;
+    line-height:1.8;
+    margin-top:6px;
+  }
+
+  /* ---------- Tracker ---------- */
+  .tracker-wrap{ overflow-x:auto; border-radius:var(--radius-md); box-shadow:var(--shadow); background:var(--surface); }
+  .tracker{ border-collapse:collapse; width:100%; min-width:520px; font-size:.78rem; }
+  .tracker th, .tracker td{ text-align:center; padding:8px 6px; border-bottom:1px solid var(--border); }
+  .tracker th{ background:var(--green-deep); color:#EFEBDD; font-size:.7rem; }
+  .tracker td:first-child, .tracker th:first-child{
+    text-align:right; position:sticky; right:0; background:var(--surface);
+    font-weight:600; padding-right:10px; min-width:92px;
+  }
+  .tracker th:first-child{ background:var(--green-deep); }
+  .tracker input[type=checkbox]{ width:17px; height:17px; accent-color:var(--green); }
+
+  .note-box{
+    background:var(--gold-tint);
+    border-radius:var(--radius-md);
+    padding:13px 15px;
+    font-size:.83rem;
+    color:#7A5A25;
+    margin-bottom:16px;
+  }
+  .note-box b{ color:var(--ink); }
+
+  /* ---------- Bottom nav ---------- */
+  .bottomnav{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    max-width:560px;
+    margin:0 auto;
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    display:flex;
+    padding:8px 6px calc(env(safe-area-inset-bottom,0) + 8px);
+    box-shadow:0 -4px 16px rgba(0,0,0,.05);
+  }
+  .bottomnav button{
+    flex:1;
+    background:none; border:none;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-family:'Hind Siliguri';
+    font-size:10.5px;
+    font-weight:600;
+    color:var(--ink-faint);
+    padding:5px 2px;
+    cursor:pointer;
+    border-radius:12px;
+  }
+  .bottomnav button svg{ width:21px; height:21px; }
+  .bottomnav button.on{ color:var(--green-deep); }
+  .bottomnav button.on .icowrap{ background:var(--green-tint); }
+  .bottomnav .icowrap{ padding:4px 12px; border-radius:100px; }
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="appbar">
+    <div class="appbar-top">
+      <span id="dateLabel">শনিবার · আজ</span>
+      <span style="display:flex; gap:6px; align-items:center;">
+        <button id="installBtn" class="streak-pill" style="display:none; border:none; cursor:pointer; font-family:inherit;">⬇ ইনস্টল</button>
+        <span class="streak-pill" id="streakPill">🔥 ৩ দিন ধারাবাহিক</span>
+      </span>
+    </div>
+    <h1>আসসালামু আলাইকুম</h1>
+    <p class="appbar-sub">নামাজকে কেন্দ্র করে সাজানো আপনার দিন</p>
+  </div>
+
+  <main class="screen">
+
+    <!-- ===== TODAY / TIMELINE ===== -->
+    <section id="tab-today" class="panel active">
+      <div class="stat-row">
+        <div class="stat-card"><span class="num">৫</span><span class="lbl">ওয়াক্ত নামাজ</span></div>
+        <div class="stat-card"><span class="num">২–২.৫ঘ</span><span class="lbl">বিসিএস</span></div>
+        <div class="stat-card"><span class="num">৬–৬.৫ঘ</span><span class="lbl">ঘুম</span></div>
+        <div class="stat-card"><span class="num">≤১ঘ</span><span class="lbl">অনলাইন</span></div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="p-top"><span>আজকের অগ্রগতি</span><b id="progressText">০/২১ সম্পন্ন</b></div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div class="legend" id="legend">
+        <button data-cat="all" class="on"><span class="dot" style="background:var(--ink-faint)"></span>সব</button>
+        <button data-cat="prayer"><span class="dot" style="background:var(--green)"></span>নামাজ</button>
+        <button data-cat="income"><span class="dot" style="background:var(--gold)"></span>আয়</button>
+        <button data-cat="study"><span class="dot" style="background:var(--blue)"></span>বিসিএস</button>
+        <button data-cat="family"><span class="dot" style="background:var(--rose)"></span>পরিবার</button>
+        <button data-cat="rest"><span class="dot" style="background:var(--indigo)"></span>বিশ্রাম</button>
+        <button data-cat="online"><span class="dot" style="background:var(--gray)"></span>অনলাইন</button>
+      </div>
+
+      <div class="timeline" id="timeline"><!-- injected by JS --></div>
+
+      <div class="note-box"><b>নোট:</b> প্রতিটি কার্ডের সময় ট্যাপ করে নিজের মতো লিখে বদলাতে পারবেন (নামাজের সময় বছরজুড়ে পরিবর্তিত হয়)। "অ্যালার্ম সেট করুন" ব্রাউজার নোটিফিকেশন ব্যবহার করে — কাজ করতে অ্যাপ/ট্যাব খোলা রাখতে হবে। সত্যিকারের সিস্টেম অ্যালার্মের জন্য নেটিভ অ্যাপে Android AlarmManager দরকার হবে (নিচের প্রম্পটে বলা আছে)।</div>
+    </section>
+
+    <!-- ===== WEEKLY ===== -->
+    <section id="tab-week" class="panel">
+      <div class="section-label">সপ্তাহের দিন বাছাই করুন</div>
+      <div class="day-picker" id="dayPicker"></div>
+      <div class="day-detail" id="dayDetail"></div>
+
+      <div class="section-label">অনলাইন কাজের নিয়ম</div>
+      <div class="card">
+        <ul>
+          <li>সর্বোচ্চ প্রতিদিন ১ ঘণ্টা, শুধু নির্ধারিত ৫ দিনে</li>
+          <li>মঙ্গল ও শুক্রবার সম্পূর্ণ অফলাইন</li>
+          <li>বিসিএস ব্লক ও পড়ানো শেষ হওয়ার পরেই শুরু</li>
+          <li>নির্ধারিত স্লট ছাড়া অ্যানালিটিক্স চেক নয়</li>
+          <li>একদিনে একটি প্ল্যাটফর্ম, পড়ার সময় ফোন-মুক্ত</li>
+        </ul>
+        <div class="callout warn">সপ্তাহ বেশি ব্যস্ত হলে অনলাইন স্লটই প্রথম বাদ — নামাজ, বিসিএস, পড়ানো বা পরিবার কখনো নয়।</div>
+      </div>
+    </section>
+
+    <!-- ===== BCS / EARNING PLAN ===== -->
+    <section id="tab-bcs" class="panel">
+      <div class="section-label">দৈনিক পড়াশোনা (২–২.৫ ঘণ্টা)</div>
+      <div class="card">
+        <ul>
+          <li><b>ব্লক ১ (সকাল, ১–১.৫ ঘ.):</b> গভীর পড়াশোনা — নতুন টপিক</li>
+          <li><b>ব্লক ২ (সন্ধ্যা, ৪৫–৬০ মি.):</b> অ্যাক্টিভ রিকল + এমসিকিউ</li>
+        </ul>
+        <table class="mini-table">
+          <tr><th>পদ্ধতি</th><th>কখন</th></tr>
+          <tr><td>ডিপ স্টাডি</td><td>সকালের ব্লক</td></tr>
+          <tr><td>অ্যাক্টিভ রিকল</td><td>সন্ধ্যার ব্লক</td></tr>
+          <tr><td>এমসিকিউ প্র্যাকটিস</td><td>সন্ধ্যার ব্লক</td></tr>
+          <tr><td>স্পেসড রিভিশন</td><td>বৃহস্পতিবার</td></tr>
+          <tr><td>এরর নোটবুক</td><td>প্রতি সেশনের পর</td></tr>
+          <tr><td>মডেল টেস্ট</td><td>শুক্রবার</td></tr>
+        </table>
+      </div>
+
+      <div class="section-label">সাপ্তাহিক ও মাসিক ছন্দ</div>
+      <div class="card">
+        <p><b>সাপ্তাহিক:</b></p>
+        <ul>
+          <li>বৃহস্পতিবার — হালকা রিভিশন (সব বিষয়)</li>
+          <li>শুক্রবার — টাইমড মডেল টেস্ট + এরর নোটবুক পর্যালোচনা</li>
+        </ul>
+        <p><b>মাসিক:</b></p>
+        <ul>
+          <li>মোট পড়াশোনার ঘণ্টা ট্র্যাক করুন</li>
+          <li>দুর্বল বিষয় চিহ্নিত করে পরের মাসে বেশি সময় দিন</li>
+          <li>আগের ভুল এমসিকিউ আবার চেষ্টা করুন</li>
+        </ul>
+      </div>
+
+      <div class="section-label">টিউশন আয় বৃদ্ধি</div>
+      <div class="card">
+        <ul>
+          <li>ছোট গ্রুপ ব্যাচ (৪–৬ জন) নির্দিষ্ট দুর্বল বিষয়ে</li>
+          <li>রেফারেল সিস্টেম — সফল রেফারেলে ছোট প্রণোদনা</li>
+          <li>পরীক্ষা-কেন্দ্রিক ৪–৬ সপ্তাহের নিবিড় ব্যাচ</li>
+          <li>স্থানীয় প্রচার — মুখে-মুখে + সাধারণ ফ্লায়ার</li>
+          <li>প্রতি ছাত্রের নির্দিষ্ট মাসিক ফি নির্ধারণ</li>
+        </ul>
+        <div class="callout">ধীরে ধীরে করুন — প্রতি ১–২ মাসে একটি পরিবর্তন, একবারে সব নয়।</div>
+      </div>
+    </section>
+
+    <!-- ===== TRACKER ===== -->
+    <section id="tab-tracker" class="panel">
+      <div class="section-label">সাপ্তাহিক অভ্যাস ট্র্যাকার</div>
+      <div class="tracker-wrap">
+        <table class="tracker" id="trackerTable"></table>
+      </div>
+
+      <div class="section-label">মাসিক পর্যালোচনা প্রশ্ন</div>
+      <div class="card">
+        <ol>
+          <li>কত দিন পাঁচ ওয়াক্ত নামাজ বজায় রেখেছেন?</li>
+          <li>মোট বিসিএস পড়াশোনার ঘণ্টা কত?</li>
+          <li>কতগুলো এমসিকিউ সমাধান করেছেন?</li>
+          <li>কোন বিষয়গুলো উন্নত হয়েছে, কোনগুলো এখনো দুর্বল?</li>
+          <li>টিউশন আয়ে কী পরিবর্তন হয়েছে?</li>
+          <li>অনলাইনে কত সময় ব্যয় হয়েছে, তা কি সাহায্য করেছে?</li>
+          <li>পরিবারের সাথে সম্পর্ক ও ঘুমের মান কেমন ছিল?</li>
+          <li>কী বন্ধ করা উচিত, কী চালিয়ে যাওয়া উচিত, কী নতুন শুরু করবেন?</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== MORE ===== -->
+    <section id="tab-more" class="panel">
+      <div class="section-label">কাঠামো</div>
+
+      <details class="accordion">
+        <summary><span class="ico">①</span>অগ্রাধিকার ব্যবস্থা<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <ol>
+            <li><b>ইসলাম</b> — নামাজ, হালাল আয়, কুরআন, জিকির, আখলাক</li>
+            <li><b>আর্থিক স্থিতিশীলতা</b> — চাকরি, টিউশনি, আয় বৃদ্ধি</li>
+            <li><b>বিসিএস ও ক্যারিয়ার</b> — দৈনিক পড়াশোনা, রিভিশন, মডেল টেস্ট</li>
+            <li><b>পরিবার</b> — স্ত্রী, যোগাযোগ, দায়িত্ব</li>
+            <li><b>অনলাইন কাজ</b> — সময়-সীমাবদ্ধ</li>
+          </ol>
+          <p>দুটি কাজ একই সময়ের জন্য প্রতিদ্বন্দ্বিতা করলে উচ্চ অগ্রাধিকারই জিতবে — নিম্নটি সরে যাবে, হারিয়ে যাবে না।</p>
+        </div>
+      </details>
+
+      <details class="accordion">
+        <summary><span class="ico">🕌</span>ইসলামি রুটিন<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <ul>
+            <li><b>নামাজ:</b> দিনের ভিত্তি — বাকি সব এর চারপাশে সাজানো</li>
+            <li><b>কুরআন:</b> ফজরের পর ১৫–৩০ মিনিট</li>
+            <li><b>জিকির:</b> প্রতি নামাজের পর সংক্ষিপ্ত</li>
+            <li><b>দোয়া:</b> ফজরের পর ও ঘুমানোর আগে</li>
+            <li><b>আখলাক:</b> ছাত্র, পরিবার ও সহকর্মীদের সাথে আচরণে সচেতনতা</li>
+          </ul>
+          <p>সিস্টেমটি হালকা রাখা হয়েছে যেন ব্যস্ত সপ্তাহেও টিকে থাকে।</p>
+        </div>
+      </details>
+
+      <details class="accordion">
+        <summary><span class="ico">👪</span>পরিবার ও বিশ্রাম<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <ul>
+            <li>পড়ানো-মাগরিব ও এশা-অফিসের মাঝের সময় পারিবারিক সময়</li>
+            <li>শুক্রবার বিকেল স্ত্রী/পরিবারের জন্য বেশি সময়</li>
+          </ul>
+          <p><b>ঘুম:</b> ৬–৬.৫ ঘণ্টা মূল ঘুম + যোহরের পর ২০–৩০ মিনিট নাপ। মঙ্গল-শুক্রে আগে ঘুমানোর চেষ্টা।</p>
+          <div class="callout">আদর্শ নয়, কিন্তু টেকসই — ঘুম কমিয়ে পড়াশোনা বাড়াবেন না।</div>
+        </div>
+      </details>
+
+      <details class="accordion">
+        <summary><span class="ico">✓</span>ন্যূনতম সফল দিন<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <p>চরম ক্লান্তির দিনে এটুকুই যথেষ্ট:</p>
+          <ul>
+            <li>পাঁচ ওয়াক্ত নামাজ</li>
+            <li>কয়েক মিনিট জিকির/ইস্তেগফার</li>
+            <li>পড়ানো + অফিস</li>
+            <li>মাত্র ১৫–২০ মিনিট বিসিএস</li>
+            <li>স্ত্রীর সাথে কয়েকটি কথা</li>
+            <li>ঘুম — আর কমাবেন না</li>
+          </ul>
+          <p>বাকি সব দোষবোধ ছাড়াই বাদ দিন।</p>
+        </div>
+      </details>
+
+      <details class="accordion">
+        <summary><span class="ico">⚠</span>জরুরি/ব্যস্ত দিন ব্যবস্থা<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <p>চাপের মধ্যে এই ক্রমে বাদ দিন:</p>
+          <ol>
+            <li>অনলাইন/ওয়েবসাইট কাজ</li>
+            <li>অপ্রয়োজনীয় টুকিটাকি কাজ</li>
+            <li>বিসিএস — ন্যূনতম করুন, বাদ নয়</li>
+          </ol>
+          <div class="callout warn"><b>কখনো স্পর্শ করবেন না:</b> নামাজ, ঘুম, মূল আয়, ন্যূনতম পারিবারিক দায়িত্ব।</div>
+        </div>
+      </details>
+
+      <details class="accordion">
+        <summary><span class="ico">🚫</span>প্রোক্রাস্টিনেশন-বিরোধী নিয়ম<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <ul>
+            <li>পড়ার সময় ফোন অন্য ঘরে বা এয়ারপ্লেন মোডে</li>
+            <li>ফেসবুক/ইউটিউব/মেসেঞ্জার শুধু অনলাইন স্লটে</li>
+            <li>অ্যানালিটিক্স স্লটের শেষে একবার</li>
+            <li>র‍্যান্ডম কোডিং/এআই টুলস শুধু ডেভ দিনে</li>
+            <li>ফোনের বিল্ট-ইন স্ক্রিন-টাইম লিমিট ব্যবহার করুন</li>
+            <li>পড়ার উপকরণ দৃশ্যমান রাখুন, ফোন নাগালের বাইরে</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="accordion">
+        <summary><span class="ico">📈</span>১২-মাসের রোডম্যাপ<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <p><b>০–৩ মাস:</b> রুটিন স্থিতিশীল করুন, একটি ছোট টিউশন ব্যাচ যোগ করুন, ধারাবাহিক বিসিএস ছন্দ শুরু করুন।</p>
+          <p><b>৩–৬ মাস:</b> রেফারেল সিস্টেম চালু, প্রথম প্রিলিমিনারি মক পরীক্ষা, প্রাসঙ্গিক চাকরির বিজ্ঞপ্তিতে আবেদন।</p>
+          <p><b>৬–১২ মাস:</b> টিউশন প্রবৃদ্ধি অব্যাহত, সম্পূর্ণ সিলেবাস রিভিশন অন্তত একবার, ওয়েবসাইটে ধীর স্থির প্রবৃদ্ধি।</p>
+          <div class="callout warn">স্পষ্ট ভালো, নিশ্চিত সুযোগ না পেলে বর্তমান চাকরি বা পড়ানো ছাড়বেন না।</div>
+        </div>
+      </details>
+
+      <details class="accordion">
+        <summary><span class="ico">📜</span>প্রতিদিন মনে রাখার ১০টি নিয়ম<span class="chev">▾</span></summary>
+        <div class="acc-body">
+          <div class="rule-chip"><b>০১.</b> নামাজ সবকিছুর আগে — দিনটি এর চারপাশে সাজান।</div>
+          <div class="rule-chip"><b>০২.</b> সংক্ষিপ্ত, ধারাবাহিক চর্চা উচ্চাভিলাষী কিন্তু ছেড়ে দেওয়া চর্চার চেয়ে ভালো।</div>
+          <div class="rule-chip"><b>০৩.</b> দিনে দুই ফোকাসড বিসিএস ব্লকই যথেষ্ট।</div>
+          <div class="rule-chip"><b>০৪.</b> অনলাইন কাজ সপ্তাহে ৫ দিন, ১ ঘণ্টা — অগ্রাধিকার শেষের পরে।</div>
+          <div class="rule-chip"><b>০৫.</b> মঙ্গল ও শুক্রবার অফলাইন দিন।</div>
+          <div class="rule-chip"><b>০৬.</b> একদিন মিস করলে দিন নষ্ট নয় — ন্যূনতম সফল দিনে ফিরুন।</div>
+          <div class="rule-chip"><b>০৭.</b> ঘুম ঐচ্ছিক নয় — অন্তত ৬ ঘণ্টা সুরক্ষিত রাখুন।</div>
+          <div class="rule-chip"><b>০৮.</b> পারিবারিক সময় নষ্ট সময় নয়।</div>
+          <div class="rule-chip"><b>০৯.</b> অভিভূত হলে অনলাইন কাজ প্রথমে বাদ দিন।</div>
+          <div class="rule-chip" style="margin-bottom:0"><b>১০.</b> রিজিক আসে হালাল প্রচেষ্টা + দোয়া + তাওয়াক্কুল + ধৈর্যের মাধ্যমে।</div>
+        </div>
+      </details>
+
+      <div class="closing-card">
+        আপনার প্রচেষ্টা — পড়ানো, পড়াশোনা, হালাল উপার্জন — সঠিক নিয়তে করলে তা নিজেই ইবাদতের অংশ। তাওয়াক্কুল মানে ধারাবাহিক সৎ প্রচেষ্টা করা এবং ফলাফল আল্লাহর উপর ছেড়ে দেওয়া। যা ভালো চলছে তার জন্য শুকর করুন। এই রুটিন লক্ষ্যে পৌঁছানোর মাধ্যম, নিজেই লক্ষ্য নয়।
+        <div style="font-size:.75rem; opacity:.75; margin-top:10px;">নির্দিষ্ট ফিকহি প্রশ্নের জন্য একজন যোগ্য স্থানীয় আলেমের পরামর্শ নিন।</div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottomnav" id="bottomnav">
+    <button data-tab="today" class="on">
+      <span class="icowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+      আজ
+    </button>
+    <button data-tab="week">
+      <span class="icowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+      সাপ্তাহিক
+    </button>
+    <button data-tab="bcs">
+      <span class="icowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20"/></svg></span>
+      বিসিএস
+    </button>
+    <button data-tab="tracker">
+      <span class="icowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 12 2.5 2.5L16 9"/></svg></span>
+      ট্র্যাকার
+    </button>
+    <button data-tab="more">
+      <span class="icowrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+      আরও
+    </button>
+  </nav>
+
+</div>
+
+<script>
+/* ---------------- Data ---------------- */
+const CAT = {
+  prayer: {label:"নামাজ", color:"var(--green)", tint:"var(--green-tint)"},
+  income: {label:"আয়", color:"var(--gold)", tint:"var(--gold-tint)"},
+  study:  {label:"বিসিএস", color:"var(--blue)", tint:"var(--blue-tint)"},
+  family: {label:"পরিবার", color:"var(--rose)", tint:"var(--rose-tint)"},
+  rest:   {label:"বিশ্রাম", color:"var(--indigo)", tint:"var(--indigo-tint)"},
+  online: {label:"অনলাইন", color:"var(--gray)", tint:"var(--gray-tint)"}
+};
+
+const TIMELINE = [
+  {t:"ফজরের আগে", d:"১০–১৫ মি.", cat:"prayer", title:"ঘুম থেকে ওঠা, ওযু", purpose:"নামাজের প্রস্তুতি", avoid:"বারবার স্নুজ করা"},
+  {t:"ফজর", d:"১০–১৫ মি.", cat:"prayer", title:"নামাজ + জিকির", purpose:"দিনের ভিত্তি", avoid:"নামাজের আগে ফোন চেক করা"},
+  {t:"ফজরের পর", d:"২০–৩০ মি.", cat:"prayer", title:"কুরআন তিলাওয়াত", purpose:"দৈনিক সংযোগ", avoid:"সোশ্যাল মিডিয়া স্ক্রল"},
+  {t:"সকাল", d:"২০–৩০ মি.", cat:"rest", title:"নাস্তা ও প্রস্তুতি", purpose:"শারীরিক প্রস্তুতি", avoid:"না খেয়ে তাড়াহুড়া"},
+  {t:"৬:০০–৮:৩০ AM", d:"২ ঘ. ৩০ মি.", cat:"income", title:"পড়ানো (ক্লাস ৬–১০)", purpose:"নির্দিষ্ট আয়"},
+  {t:"পড়ানোর পর", d:"১৫–২০ মি.", cat:"rest", title:"বিশ্রাম / হালকা নাস্তা", purpose:"পুনরুদ্ধার", avoid:"সাথে সাথে ল্যাপটপ খোলা"},
+  {t:"সকালের মাঝামাঝি", d:"১–১.৫ ঘ.", cat:"study", title:"বিসিএস ব্লক #১ — গভীর পড়াশোনা", purpose:"সেরা মনোযোগের সময়", avoid:"এই সময় অন্য কাজে দেওয়া"},
+  {t:"বেলা বাড়তে", d:"৩০–৪৫ মি.", cat:"online", title:"টুকিটাকি কাজ / অনলাইন স্লট", purpose:"নমনীয় বাফার", avoid:"সীমাহীন ব্রাউজিং"},
+  {t:"যোহর", d:"~১৫ মি.", cat:"prayer", title:"নামাজ", purpose:"ভিত্তি"},
+  {t:"যোহরের পর", d:"২০–৩০ মি.", cat:"rest", title:"খাবার + সংক্ষিপ্ত নাপ", purpose:"শারীরিক পুনরুদ্ধার", avoid:"এটি বাদ দেওয়া"},
+  {t:"বিকেলের শুরু", d:"৩০–৪৫ মি.", cat:"rest", title:"ফ্রি / বাফার / হালকা এমসিকিউ", purpose:"নমনীয়তা", avoid:"ওভারলোড করা"},
+  {t:"২:০০ PM–সন্ধ্যা", d:"~৩ ঘ.", cat:"income", title:"পড়ানো (ক্লাস ৬–১০)", purpose:"নির্দিষ্ট আয়"},
+  {t:"আসর", d:"~১৫ মি.", cat:"prayer", title:"নামাজ", purpose:"ভিত্তি", avoid:"বাদ দেওয়া"},
+  {t:"পড়ানোর পর", d:"৩০–৪৫ মি.", cat:"family", title:"পরিবারের সাথে সময়, চা", purpose:"সম্পর্ক রক্ষা", avoid:"সরাসরি স্ক্রিনে যাওয়া"},
+  {t:"মাগরিব", d:"~১৫–২০ মি.", cat:"prayer", title:"নামাজ", purpose:"ভিত্তি"},
+  {t:"মাগরিবের পর", d:"৪৫–৬০ মি.", cat:"study", title:"বিসিএস ব্লক #২ (রিকল/এমসিকিউ) বা পারিবারিক সময়", purpose:"দ্বিতীয় পড়ার সময়", avoid:"ঠিকমতো না খাওয়া"},
+  {t:"এশা", d:"~১৫–২০ মি.", cat:"prayer", title:"নামাজ", purpose:"ভিত্তি"},
+  {t:"এশার পর", d:"৩০–৪৫ মি.", cat:"family", title:"রাতের খাবার, পরিবার", purpose:"বিশ্রাম", avoid:"অফিসের আগে অনলাইন কাজ"},
+  {t:"৮:৪৫ PM–১২:০০ AM", d:"~৩ ঘ. ১৫ মি.", cat:"income", title:"অফিস / চাকরি", purpose:"নির্দিষ্ট আয়"},
+  {t:"মধ্যরাতের পর", d:"১৫–২০ মি.", cat:"prayer", title:"দোয়া / ইস্তেগফার, ঘুমের প্রস্তুতি", purpose:"দিন শেষ করা", avoid:"ফোন খোলা"},
+  {t:"ঘুম", d:"৬–৬.৫ ঘ. (ন্যূনতম)", cat:"rest", title:"ঘুম", purpose:"পুনরুদ্ধার", avoid:"ঘুম ত্যাগ করা"}
+];
+
+const WEEK = [
+  {short:"শনি", full:"শনিবার", off:false, subject:"বাংলা + সাধারণ জ্ঞান", online:"ওয়েবসাইট ১ (১ ঘণ্টা)"},
+  {short:"রবি", full:"রবিবার", off:false, subject:"ইংরেজি", online:"ওয়েবসাইট ২ (১ ঘণ্টা)"},
+  {short:"সোম", full:"সোমবার", off:false, subject:"গণিত + মানসিক দক্ষতা", online:"ওয়েব ডেভেলপমেন্ট (১ ঘণ্টা)"},
+  {short:"মঙ্গল", full:"মঙ্গলবার", off:true, subject:"সাধারণ বিজ্ঞান + আইসিটি", online:"নেই — পুনরুদ্ধার দিন"},
+  {short:"বুধ", full:"বুধবার", off:false, subject:"আন্তর্জাতিক বিষয়াবলি", online:"ওয়েবসাইট ১ (১ ঘণ্টা)"},
+  {short:"বৃহ", full:"বৃহস্পতিবার", off:false, subject:"সাপ্তাহিক রিভিশন", online:"ওয়েবসাইট ২ / ডেভ (১ ঘণ্টা)"},
+  {short:"শুক্র", full:"শুক্রবার", off:true, subject:"মডেল টেস্ট + এরর রিভিউ", online:"নেই"}
+];
+
+const HABITS = ["ফজর","যোহর","আসর","মাগরিব","এশা","কুরআন","বিসিএস","এমসিকিউ","টিউশন","অফিস","পরিবার","ওয়েবসাইট","হাঁটা/ব্যায়াম"];
+
+/* ---------------- Local storage (data persists across app opens) ---------------- */
+const STORE_KEY = 'routineAppState_v1';
+function loadStore(){
+  try{
+    return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+  }catch(e){ return {}; }
+}
+function saveStore(patch){
+  const s = loadStore();
+  Object.assign(s, patch);
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){}
+}
+const store = loadStore();
+if(!store.done) store.done = {};
+if(!store.times) store.times = {};
+if(!store.alarms) store.alarms = {};
+if(!store.tracker) store.tracker = {};
+
+/* ---------------- Today's date (Bengali) ---------------- */
+(function setDateLabel(){
+  const days = ["রবিবার","সোমবার","মঙ্গলবার","বুধবার","বৃহস্পতিবার","শুক্রবার","শনিবার"];
+  const label = document.getElementById('dateLabel');
+  if(label) label.textContent = days[new Date().getDay()] + ' · আজ';
+})();
+
+/* ---------------- Render timeline ---------------- */
+const timelineEl = document.getElementById('timeline');
+TIMELINE.forEach((item, idx)=>{
+  const c = CAT[item.cat];
+  const el = document.createElement('div');
+  el.className = 't-item' + (item.cat==='prayer' ? ' prayer' : '');
+  el.dataset.cat = item.cat;
+  el.style.setProperty('--cat-color', c.color);
+  el.style.setProperty('--cat-tint', c.tint);
+  const savedTime = store.times[idx] || item.t;
+  const isDone = !!store.done[idx];
+  el.innerHTML = `
+    <div class="rail"><div class="node"></div></div>
+    <div class="t-card${isDone ? ' done' : ''}" id="card-${idx}">
+      <div class="t-top">
+        <span class="t-time" contenteditable="true" spellcheck="false" title="ট্যাপ করে সময় বদলান">${savedTime}</span>
+        <span class="t-check">
+          <span class="t-dur">${item.d}</span>
+          <input type="checkbox" class="done-box" data-idx="${idx}" title="সম্পন্ন হিসেবে চিহ্নিত করুন" ${isDone ? 'checked' : ''}>
+        </span>
+      </div>
+      <div class="t-title">${item.title}</div>
+      <p class="t-purpose">${item.purpose}</p>
+      <div class="t-alarm-row">
+        <input type="time" class="alarm-input" data-idx="${idx}" value="${store.alarms[idx] || ''}">
+        <button class="alarm-btn${store.alarms[idx] ? ' set' : ''}" data-idx="${idx}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 1M8.5 3.5 5 6M15.5 3.5 19 6"/></svg>
+          ${store.alarms[idx] ? `সেট: ${store.alarms[idx]}` : 'অ্যালার্ম সেট করুন'}
+        </button>
+      </div>
+      ${item.avoid ? `<details><summary>বিস্তারিত</summary><p class="t-avoid"><b>যা করবেন না:</b> ${item.avoid}</p></details>` : ``}
+    </div>`;
+  timelineEl.appendChild(el);
+});
+
+/* ---------------- Progress tracking ---------------- */
+const totalItems = TIMELINE.length;
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+function toBengaliDigits(n){
+  const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+  return String(n).replace(/[0-9]/g, d=>map[d]);
+}
+function updateProgress(){
+  const done = document.querySelectorAll('.done-box:checked').length;
+  const pct = Math.round((done/totalItems)*100);
+  progressFill.style.width = pct + '%';
+  progressText.textContent = `${toBengaliDigits(done)}/${toBengaliDigits(totalItems)} সম্পন্ন`;
+}
+timelineEl.addEventListener('change', e=>{
+  if(e.target.classList.contains('done-box')){
+    document.getElementById('card-'+e.target.dataset.idx).classList.toggle('done', e.target.checked);
+    store.done[e.target.dataset.idx] = e.target.checked;
+    saveStore({done: store.done});
+    updateProgress();
+  }
+});
+timelineEl.addEventListener('blur', e=>{
+  if(e.target.classList.contains('t-time')){
+    const card = e.target.closest('.t-card');
+    const idx = card.id.replace('card-','');
+    store.times[idx] = e.target.textContent.trim();
+    saveStore({times: store.times});
+  }
+}, true);
+updateProgress();
+
+/* ---------------- Alarms ---------------- */
+const activeAlarms = Object.assign({}, store.alarms); // idx -> "HH:MM", restored from storage
+if('Notification' in window && Notification.permission === 'default'){
+  // permission requested lazily on first alarm set, not on load
+}
+function fireAlarm(label){
+  if('Notification' in window && Notification.permission === 'granted'){
+    new Notification('রুটিন রিমাইন্ডার', {body: label, tag: 'routine-alarm'});
+  } else {
+    alert('⏰ সময় হয়েছে: ' + label);
+  }
+}
+timelineEl.addEventListener('click', e=>{
+  const btn = e.target.closest('.alarm-btn');
+  if(!btn) return;
+  const idx = btn.dataset.idx;
+  const input = timelineEl.querySelector(`.alarm-input[data-idx="${idx}"]`);
+  if(!input.value){ input.focus(); return; }
+  if(activeAlarms[idx]){
+    delete activeAlarms[idx];
+    delete store.alarms[idx];
+    saveStore({alarms: store.alarms});
+    btn.classList.remove('set');
+    btn.lastChild.textContent = 'অ্যালার্ম সেট করুন';
+    return;
+  }
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+  activeAlarms[idx] = input.value;
+  store.alarms[idx] = input.value;
+  saveStore({alarms: store.alarms});
+  btn.classList.add('set');
+  btn.lastChild.textContent = `সেট: ${input.value}`;
+});
+setInterval(()=>{
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const current = `${hh}:${mm}`;
+  Object.keys(activeAlarms).forEach(idx=>{
+    if(activeAlarms[idx] === current){
+      fireAlarm(TIMELINE[idx].title);
+      delete activeAlarms[idx];
+      delete store.alarms[idx];
+      saveStore({alarms: store.alarms});
+      const btn = timelineEl.querySelector(`.alarm-btn[data-idx="${idx}"]`);
+      if(btn){ btn.classList.remove('set'); btn.lastChild.textContent = 'অ্যালার্ম সেট করুন'; }
+    }
+  });
+}, 15000);
+
+/* ---------------- Legend filter ---------------- */
+document.getElementById('legend').addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  document.querySelectorAll('#legend button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const cat = btn.dataset.cat;
+  document.querySelectorAll('.t-item').forEach(it=>{
+    it.dataset.hide = (cat!=='all' && it.dataset.cat!==cat) ? '1' : '0';
+  });
+});
+
+/* ---------------- Weekly tab ---------------- */
+const dayPicker = document.getElementById('dayPicker');
+const dayDetail = document.getElementById('dayDetail');
+function renderDay(idx){
+  const d = WEEK[idx];
+  dayDetail.innerHTML = `
+    <h3>${d.full}${d.off ? ' · অফলাইন দিন' : ''}</h3>
+    <div class="day-row">
+      <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/></svg></div>
+      <div class="txt"><b>বিসিএস ফোকাস</b><span>${d.subject}</span></div>
+    </div>
+    <div class="day-row online">
+      <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
+      <div class="txt"><b>অনলাইন স্লট</b><span>${d.online}</span></div>
+    </div>`;
+}
+WEEK.forEach((d,i)=>{
+  const b = document.createElement('button');
+  if(d.off) b.classList.add('off-day');
+  if(i===0) b.classList.add('on');
+  b.innerHTML = `${d.short}<span>${d.off?'অফ':'পড়া'}</span>`;
+  b.addEventListener('click', ()=>{
+    dayPicker.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    renderDay(i);
+  });
+  dayPicker.appendChild(b);
+});
+renderDay(0);
+
+/* ---------------- Tracker table ---------------- */
+const tt = document.getElementById('trackerTable');
+let thead = '<tr><th>অভ্যাস</th>' + WEEK.map(d=>`<th>${d.short}</th>`).join('') + '</tr>';
+let rows = HABITS.map((h,hi)=>`<tr><td>${h}</td>${WEEK.map((d,di)=>{
+  const key = hi+'-'+di;
+  const checked = store.tracker[key] ? 'checked' : '';
+  return `<td><input type="checkbox" data-key="${key}" ${checked}></td>`;
+}).join('')}</tr>`).join('');
+tt.innerHTML = thead + rows;
+tt.addEventListener('change', e=>{
+  if(e.target.type === 'checkbox'){
+    store.tracker[e.target.dataset.key] = e.target.checked;
+    saveStore({tracker: store.tracker});
+  }
+});
+
+/* ---------------- Bottom nav ---------------- */
+document.getElementById('bottomnav').addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  document.querySelectorAll('.bottomnav button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  window.scrollTo({top:0, behavior:'instant'});
+});
+/* ---------------- Install as app (PWA) ---------------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+let deferredInstallPrompt = null;
+const installBtn = document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if(installBtn) installBtn.style.display = 'flex';
+});
+if(installBtn){
+  installBtn.addEventListener('click', async ()=>{
+    if(!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installBtn.style.display = 'none';
+  });
+}
+window.addEventListener('appinstalled', ()=>{
+  if(installBtn) installBtn.style.display = 'none';
+});
+</script>
+
+</body>
+</html>
